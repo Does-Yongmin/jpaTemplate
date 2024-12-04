@@ -69,6 +69,33 @@
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
 
+		<!--################################################################################ Hibernate -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+		</dependency>
+
+		<!--################################################################################ Spring boot JDBC -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jdbc</artifactId>
+		</dependency>
+
+		<!--################################################################################ QueryDSL Core -->
+		<dependency>
+			<groupId>com.querydsl</groupId>
+			<artifactId>querydsl-jpa</artifactId>
+			<version>5.0.0</version>
+		</dependency>
+
+		<!--################################################################################ QueryDSL APT for Annotation Processing -->
+		<dependency>
+			<groupId>com.querydsl</groupId>
+			<artifactId>querydsl-apt</artifactId>
+			<version>5.0.0</version>
+			<scope>provided</scope>
+		</dependency>
+
 		<!--################################################################################ Spring boot Mybatis -->
 <!--		<dependency>-->
 <!--			<groupId>org.mybatis.spring.boot</groupId>-->
@@ -149,7 +176,9 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<optional>true</optional>
+			<version>1.18.30</version>
+			<scope>provided</scope>
+<!--			<optional>true</optional>-->
 		</dependency>
 
 		<!--################################################################################ Apache Tika (Mimetype detector) -->
@@ -221,12 +250,6 @@
 			<url>file://${project.basedir}/lib</url>
 		</repository>
 		<repository>
-			<id>oracle</id>
-			<name>ORACLE JDBC Repository</name>
-			<!--<url>http://maven.jahia.org/maven2</url>-->
-			<url>http://nexus.saas.hand-china.com/content/repositories/rdc/</url>
-		</repository>
-		<repository>
 			<id>central</id>
 			<name>Central Repository</name>
 			<url>https://repo.maven.apache.org/maven2</url>
@@ -250,6 +273,48 @@
 						</exclude>
 					</excludes>
 				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.11.0</version>
+				<configuration>
+					<source>8</source> <!-- Java 버전 -->
+					<target>8</target>
+					<generatedSourcesDirectory>src/main/generated</generatedSourcesDirectory> <!-- 생성된 Q 파일 경로 -->
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>1.18.30</version>
+						</path>
+						<path>
+							<groupId>com.querydsl</groupId>
+							<artifactId>querydsl-apt</artifactId>
+							<version>5.0.0</version>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
+
+			<!-- 아래는 QueryDSL : Q + Entity 클래스를 자동 생성해주기 위한 설정 -->
+			<plugin>
+				<groupId>com.mysema.maven</groupId>
+				<artifactId>apt-maven-plugin</artifactId>
+				<version>1.1.3</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>process</goal>
+						</goals>
+						<configuration>
+<!--							<outputDirectory>target/generated-sources/java</outputDirectory>-->
+							<outputDirectory>src/main/generated</outputDirectory>
+							<processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
