@@ -1,18 +1,18 @@
 target/
+classes/
+*.class
+**/classes/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 
 ### IntelliJ IDEA ###
-.idea/modules.xml
-.idea/jarRepositories.xml
-.idea/compiler.xml
-.idea/libraries/
+.idea
 *.iws
 *.iml
 *.ipr
 
-### Eclipse ###
+### Eclipse (= STS) ###
 .apt_generated
 .classpath
 .factorypath
@@ -34,5 +34,16 @@ build/
 ### VS Code ###
 .vscode/
 
-### Mac OS ###
+### OS Index ###
 .DS_Store
+Thumb.db
+
+### Front-end compiled ###
+node_modules/
+node/
+
+### file upload path ###
+**/webapp/upload/**
+
+### Prevent changes to spring java execution settings ###
+.vscode/launch.json
