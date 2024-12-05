@@ -242,6 +242,7 @@
 			</releases>
 		</pluginRepository>
 	</pluginRepositories>
+
 	<!-- dependency 추가 시 라이브러리를 못찾을 경우를 위한 리포지토리 추가 -->
 	<repositories>
 		<repository>
@@ -282,7 +283,7 @@
 				<configuration>
 					<source>8</source> <!-- Java 버전 -->
 					<target>8</target>
-					<generatedSourcesDirectory>src/main/generated</generatedSourcesDirectory> <!-- 생성된 Q 파일 경로 -->
+					<generatedSourcesDirectory>src/main/generated</generatedSourcesDirectory> <!-- 컴파일시 생성된 Q 파일 경로 바라보도록 -->
 					<annotationProcessorPaths>
 						<path>
 							<groupId>org.projectlombok</groupId>
@@ -309,7 +310,6 @@
 							<goal>process</goal>
 						</goals>
 						<configuration>
-<!--							<outputDirectory>target/generated-sources/java</outputDirectory>-->
 							<outputDirectory>src/main/generated</outputDirectory>
 							<processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
 						</configuration>

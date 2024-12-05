@@ -1,27 +1,41 @@
 package com.does.biz.repository.simple;
 
-import com.does.biz.domain.simple.QSimple;
 import com.does.biz.domain.simple.Simple;
-import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.querydsl.jpa.JPQLQuery;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-import java.util.ArrayList;
 import java.util.List;
+
+import static com.does.biz.domain.simple.QSimple.simple;
 
 @Repository
 public class SimpleRepositoryImpl extends QuerydslRepositorySupport implements SimpleRepositoryCustom {
-	private final JPAQueryFactory queryFactory;
+	public SimpleRepositoryImpl() {
+		super(Simple.class);
+	}
 	
-	public SimpleRepositoryImpl(EntityManager entityManager) {
-		super(Simple.class); 		// Entity Path를 전달.
-		this.queryFactory = new JPAQueryFactory(entityManager);
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	@Override
+	public List<Simple> findAll() {
+		return from(simple).fetch();
 	}
 	
 	@Override
-	public List<Simple> findAll() {
-		QSimple simple = QSimple.simple;
-		return queryFactory.selectFrom(simple).fetch();
+	public long countAll() {
+		return from(simple).fetchCount();
+	}
+	
+	@Override
+	public List<Simple> findPageByName(String name, Pageable pageable) {
+		JPQLQuery<Simple> query = from(simple).where(simple.name.eq(name));
+		JPQLQuery<Simple> pagedQuery = getQuerydsl().applyPagination(pageable, query);
+		return pagedQuery.fetch();
+	}
+	
+	@Override
+	public long countByName(String name) {
+		return from(simple).where(simple.name.eq(name)).fetchCount();
 	}
 }

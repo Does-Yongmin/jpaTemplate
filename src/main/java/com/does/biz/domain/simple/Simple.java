@@ -1,10 +1,7 @@
 package com.does.biz.domain.simple;
 
 import com.does.biz.domain.core.Base;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,5 +18,7 @@ public class Simple extends Base {
 	@Column(name = "NAME")
 	private String name;
 	
-	
+	public void setName(String name) {
+		this.name = name;
+	}
 }

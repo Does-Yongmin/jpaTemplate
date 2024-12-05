@@ -1,33 +1,48 @@
 package com.does.biz.domain.core;
 
+import lombok.Getter;
+
 import javax.persistence.*;
 import java.util.Date;
 
 @MappedSuperclass
+@Getter
 public abstract class Base {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "SEQ")
-	private Long seq;
+	protected Long seq;
 	
 	@Column(name = "USE_YN")
-	private	String useYn;
+	protected String useYn;
 	
 	@Column(name = "CREATE_DATE")
-	private Date createDate;
+	protected Date createDate;
 	
 	@Column(name = "CREATEOR")
-	private	String creator;
+	protected String creator;
 	
 	@Column(name = "CREATEOR_IP")
-	private String creatorIp;
+	protected String creatorIp;
 	
 	@Column(name = "UPDATE_DATE")
-	private	Date updateDate;
+	protected Date updateDate;
 	
 	@Column(name = "UPDATER")
-	private	String updater;
+	protected String updater;
 	
 	@Column(name = "UPDATER_IP")
-	private	String updaterIp;
+	protected String updaterIp;
+	
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
+	}
+	
+	public void setUpdater(String updater) {
+		this.updater = updater;
+	}
+	
+	public void setUpdaterIp(String updaterIp) {
+		this.updaterIp = updaterIp;
+	}
 }
