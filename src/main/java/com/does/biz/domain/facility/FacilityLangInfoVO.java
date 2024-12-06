@@ -15,7 +15,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FacilityLangInfoVO {
+public class FacilityLangInfo {
 	private String seq;						// 일련번호
 	private String refSeq;					// 부모 테이블의 일련번호
 	private int orderNum;					// 정렬 순서. 작을수록 먼저 노출
@@ -27,7 +27,7 @@ public class FacilityLangInfoVO {
 	private String searchKeywords;			// 검색키워드. 콤마로 구분 (예: "lotte,love")
 	
 	// 특정 카테고리 (예: F&B) 인 경우에만 사용
-	private List<FacilityMenuVO> menuList;		// 메뉴 정보
+	private List<FacilityMenu> menuList;		// 메뉴 정보
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public String[] getTagsArrays() {

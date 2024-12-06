@@ -134,6 +134,6 @@ public class SimpleService {
 	}
 	
 	private Date convertToDate(LocalDateTime localDateTime) {
-		return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+		return Date.from(localDateTime.atZone(ZoneId.adminDefault()).toInstant());
 	}
 }

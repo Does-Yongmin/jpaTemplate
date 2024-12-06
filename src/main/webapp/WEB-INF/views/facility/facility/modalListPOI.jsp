@@ -1,0 +1,184 @@
+<%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
+
+<style>
+    .modal {
+        display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
+        overflow: auto; background-color: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center;
+    }
+    .modal-content {
+        background-color: #f2f2f2; padding: 20px; border: none; width: 90%; max-width: 1200px; height: 90%;
+        max-height: 100%; border-radius: 10px; overflow-y: auto; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); position: relative;
+    }
+    .modal-content h3 {
+        margin-top: 30px; padding: 10px 20px; background-color: #666; color: white; position: relative;
+    }
+
+    .modal-guide {margin: 15px 0;padding-left: 5px; /* 글머리기호랑 문구 사이 여백 */font-size: 14px;color: #333;line-height: 1.5;}
+    .modal-guide li {list-style-type: disc;margin-left: 20px;}
+    .modal-guide li b {color : #F37321;}
+
+    .modal .close {position: absolute;top: 10px;right: 20px;color: #aaa;font-size: 28px;font-weight: bold;cursor: pointer;}
+    .modal .close:hover, .modal .close:focus {color: black;text-decoration: none;cursor: pointer;}
+
+    .modal .search-bar {margin: 20px auto;display: flex;align-items: center;justify-content: center;}
+    .modal .search-bar input[type="text"] {align-items: center;width: 60%;padding: 10px;border: 1px solid #ccc;border-radius: 5px;margin-right: 10px;}
+    .modal .search-bar button {padding: 10px 20px;background-color: #666;color: white;border: none;border-radius: 5px;cursor: pointer;}
+    .modal .search-bar button:hover {background-color: #444;}
+
+    .modal-table {width: 100%;border-collapse: collapse;margin-top: 20px;}
+    .modal-table th, .modal-table td {padding: 12px;text-align: left;border-bottom: 1px solid #ddd;}
+    .modal-table th {background-color: #666;color: white;}
+    .modal-table td {
+        max-width: 250px;
+        background-color: white;
+        white-space: normal;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .modal-table tr {cursor: pointer;}
+    .modal-table tbody tr:hover {font-weight: bold; color: blue;}
+
+    .modal-pagination {display: flex;justify-content: center;margin-top: 20px;}
+    .modal-pagination #paging tr:hover {background-color: #f2f2f2;}
+</style>
+
+<div id="storeModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+
+        <h3>다비오 위치 ID 조회</h3>
+        <div class="modal-guide">
+            <li>매장 검색으로 원하는 매장을 찾으세요.</li>
+            <li>선택하고 싶은 매장을 눌러 매장 선택을 완료하세요.</li>
+        </div>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="매장 및 시설명을 입력하세요">
+            <button type="button" onclick="searchPOI()">검색</button>
+        </div>
+        <table class="modal-table">
+            <thead>
+            <tr>
+                <th style="width: 30%;">POI ID</th>
+                <th style="width: 30%;">매장 및 시설명 (POI Title)</th>
+                <th style="width: 10%;">층</th>
+            </tr>
+            </thead>
+            <tbody id="modal-table-body">
+                <%@include file="modalListContentPOI.jsp" %>
+            </tbody>
+        </table>
+        <div class="modal-pagination">
+            <%@include file="modalListPagingPOI.jsp" %>
+        </div>
+    </div>
+</div>
+
+<script>
+    const modal = document.getElementById('storeModal');
+    let initFloorName = '';
+    let initElementIndex = 0;
+
+    window.onclick = function(event) {
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    document.getElementById('searchInput').addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            searchPOI();
+        }
+    });
+
+    function closeModal() {
+        modal.style.display = "none";
+    }
+
+    function addPOI(floorElement, elementIndex) {
+        const floorSelect = floorElement.closest('.floorRow').querySelector('select[name="floorSelect"]');
+        const selectedFloor = floorSelect.value;
+        if (!selectedFloor) {
+            alert('위치 ID 값을 연결할 층을 먼저 선택해 주세요.');
+            return;
+        }
+        if (elementIndex == null || isNaN(elementIndex)) {
+            alert('층 정보를 연결할 인덱스 정보가 없습니다.');
+            return;
+        }
+
+        initFloorName = selectedFloor;
+        initElementIndex = elementIndex;
+        searchPOI(selectedFloor);
+        modal.style.display = "flex";
+    }
+
+    function searchPOI(floorName, page) {
+        let floorNameValue = floorName == null ? initFloorName : floorName;
+        let pageNum = page || 1;
+        let searchText = document.getElementById('searchInput').value || '';
+
+        fetch('/facility/facility/modal-list-content-poi?searchText=' + encodeURIComponent(searchText) + '&pageNum=' + pageNum + '&floorName=' + floorNameValue)
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('modal-table-body').innerHTML = data;
+
+                const rows = document.querySelectorAll('#modal-table-body tr');
+                rows.forEach(row => {
+                    row.addEventListener('click', function() {
+                        const poiId = this.querySelector('td:nth-child(1)')?.innerText;
+                        const floorName = this.querySelector('td:nth-child(3)')?.innerText;
+
+                        if (poiId && floorName) {
+                            selectPOI(poiId, floorName);
+                        }
+                    });
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching poi data:', error);
+            });
+
+        fetch('/facility/facility/modal-list-paging-poi?searchText=' + encodeURIComponent(searchText) + '&pageNum=' + pageNum + '&floorName=' + floorNameValue)
+            .then(response => response.text())
+            .then(data => {
+                document.querySelector('.modal-pagination').innerHTML = data;
+
+                const paginationLinks = document.querySelectorAll('.modal-pagination .page');
+                paginationLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        const pageNum = this.getAttribute('data-page-num');
+                        searchPOI(floorNameValue, pageNum);
+                    });
+                });
+
+                updateCurrentPageStyle(pageNum);
+            })
+            .catch(error => {
+                console.error('Error fetching poi data:', error);
+            });
+    }
+
+    function updateCurrentPageStyle(currentPage) {
+        // 기존의 now 제거
+        const bef = document.querySelector('.page.now');
+        if (bef) bef.classList.remove('now');
+
+        // 현재 페이지 번호에 now 추가
+        const after = document.querySelector('td.page:not(.prev):not(.next):not(.now)[data-page-num="' + currentPage + '"]');
+        if (after) after.classList.add('now');
+    }
+
+    function selectPOI(poiId, floorName) {
+        const poiSelectElement = document.querySelector('input[name="poiSelect' + initElementIndex + '"]');
+        if (poiSelectElement) {
+            poiSelectElement.value = poiId;
+        }
+
+        const poiSelectFloorNameElement = document.querySelector('input[name="poiSelectFloorName' + initElementIndex + '"]');
+        if (poiSelectFloorNameElement) {
+            poiSelectFloorNameElement.value = floorName;
+        }
+
+        closeModal();
+    }
+</script>

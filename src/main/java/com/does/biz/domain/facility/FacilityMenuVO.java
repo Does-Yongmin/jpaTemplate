@@ -13,7 +13,7 @@ import org.apache.commons.text.StringEscapeUtils;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FacilityMenuVO {
+public class FacilityMenu {
 	private String seq;			// 일련번호
 	private String refSeq;		// 부모 테이블의 일련번호
 	private int orderNum;		// 정렬 순서. 작을수록 먼저 노출

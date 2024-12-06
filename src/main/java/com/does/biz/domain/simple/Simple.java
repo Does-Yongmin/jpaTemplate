@@ -16,9 +16,7 @@ import javax.persistence.Table;
 @Table(name = "SIMPLE")
 public class Simple extends Base {
 	@Column(name = "NAME")
+	@Setter
 	private String name;
-	
-	public void setName(String name) {
-		this.name = name;
-	}
+
 }
